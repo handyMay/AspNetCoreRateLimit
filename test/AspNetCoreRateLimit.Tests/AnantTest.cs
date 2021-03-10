@@ -34,7 +34,7 @@
 
         public static void UseRateLimiter(this IApplicationBuilder app)
         {
-            app.UseClientRateLimiting();
+            app.UseMiddleware<ForgeClientRateLimitMiddleware>();
         }
     }
 
