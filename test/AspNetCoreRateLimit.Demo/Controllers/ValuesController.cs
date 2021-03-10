@@ -17,7 +17,14 @@ namespace AspNetCoreRateLimit.Demo.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
-            return "value";
+            return "value is " + id;
+        }
+
+        [HttpGet("{user}")]
+        [Route("user/{uname}/email/{id}")]
+        public string Email(string user)
+        {
+            return user + "@email.com";
         }
 
         // POST api/values
