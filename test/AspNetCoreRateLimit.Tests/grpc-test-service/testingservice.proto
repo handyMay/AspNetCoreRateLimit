@@ -1,0 +1,19 @@
+﻿//
+//  Copyright (c) Microsoft Corporation.  All rights reserved.
+//
+
+syntax = "proto3";
+
+package microsoft.outlook.platform.hosting.extensions.tests;
+
+option csharp_namespace = "Microsoft.Outlook.Platform.Hosting.Extensions.Tests";
+
+service TestingService {
+	rpc SimpleMethod(PayloadRequest) returns (PayloadResponse);
+}
+
+message PayloadResponse {
+}
+
+message PayloadRequest {
+}

@@ -9,7 +9,7 @@ namespace AspNetCoreRateLimit.Tests
         public string Build(ClientRequestIdentity requestIdentity, RateLimitRule rule)
         {
             Console.WriteLine("ForgePathCounterKeyBuilder: building the counter key");
-            return "ForgePathCounterKeyBuilder";
+            return $"_{requestIdentity.HttpVerb}_{requestIdentity.Path}";
         }
     }
 }

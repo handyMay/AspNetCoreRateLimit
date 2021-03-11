@@ -46,22 +46,16 @@
         [TestMethod]
         public async Task TestMethod1()
         {
-            var configurationBuilder = new ConfigurationBuilder();
-            using var stream = new MemoryStream();
-            using var writer = new StreamWriter(stream);
-            writer.Write(this.jsonConfig);
-            writer.Flush();
-            stream.Position = 0;
-            //var config = configurationBuilder.AddJsonStream(stream).Build();
             var builder = new WebHostBuilder()
                 .ConfigureAppConfiguration((builder, config) =>
                 {
                     config.AddInMemoryCollection(new Dictionary<string, string>
                         {
                             { "ClientRateLimiting:EnableEndpointRateLimiting", "True" },
+                            { "ClientRateLimiting:EnableRegexRuleMatching", "True" },
                             { "ClientRateLimiting:HttpStatusCode", "503" },
                             { "ClientRateLimiting:RateLimitCounterPrefix", "Anants-RateLimitCounterPrefix" },
-                            { "ClientRateLimiting:GeneralRules:0:Endpoint", "*:/api/v1/*/experimentalevents/*" },
+                            { "ClientRateLimiting:GeneralRules:0:Endpoint", "(.+):(/api/v1/).+(/experimentalevents/).+" },
                             { "ClientRateLimiting:GeneralRules:0:Period", "115m" },
                             { "ClientRateLimiting:GeneralRules:0:Limit", "1" },
                         });
@@ -105,6 +99,43 @@
                 response1.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
                 (await response1.Content.ReadAsStringAsync()).Should().NotBeNull();
             }
+        }
+
+        [TestMethod]
+        public async Task TestMethodGRPC()
+        {
+            var builder = new WebHostBuilder()
+                .ConfigureAppConfiguration((builder, config) =>
+                {
+                    config.AddInMemoryCollection(new Dictionary<string, string>
+                        {
+                            { "ClientRateLimiting:EnableEndpointRateLimiting", "True" },
+                            { "ClientRateLimiting:EnableRegexRuleMatching", "True" },
+                            { "ClientRateLimiting:HttpStatusCode", "503" },
+                            { "ClientRateLimiting:RateLimitCounterPrefix", "Anants-RateLimitCounterPrefix" },
+                            { "ClientRateLimiting:GeneralRules:0:Endpoint", "(.+):(/api/v1/).+(/experimentalevents/).+" },
+                            { "ClientRateLimiting:GeneralRules:0:Period", "115m" },
+                            { "ClientRateLimiting:GeneralRules:0:Limit", "1" },
+                        });
+                })
+                .ConfigureServices((builder, serviceCollection) =>
+                {
+                    serviceCollection.AddRateLimiter(builder.Configuration);
+                }).
+                ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddConsole(loggerConfig =>
+                    {
+                        loggerConfig.LogToStandardErrorThreshold = LogLevel.Trace;
+                    });
+                })
+                .Configure(app =>
+                {
+                    app.UseRateLimiter();
+                    //app.ApplicationServices.GetRequiredService<IClientPolicyStore>().SeedAsync().Wait();
+                    app.Run(async context => await context.Response.WriteAsync("Done"));
+                });
         }
     }
 }
