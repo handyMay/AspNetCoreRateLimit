@@ -136,6 +136,30 @@
                     //app.ApplicationServices.GetRequiredService<IClientPolicyStore>().SeedAsync().Wait();
                     app.Run(async context => await context.Response.WriteAsync("Done"));
                 });
+
+            using var server = new TestServer(builder)
+            {
+                // Unfortunately, the test server accepts a request which is missing the "testservice"
+                // path segment, but this is added here anyway to mirror what is done in production.
+                BaseAddress = new Uri("http://localhost/testservice"),
+                AllowSynchronousIO = true,
+            };
+
+            using var handler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, server.CreateHandler());
+            using var transformingHandler = new PathPrependingUriTransformingHandler(
+                new UriBuilder(server.BaseAddress).Path, handler);
+            var loggerFactory = server.Services.GetRequiredService<ILoggerFactory>();
+            // Note that address does not include the path segment, which is why we must use
+            // the PathPrependingUriTransformingHandler above.
+            using var channel = GrpcChannel.ForAddress(address: server.BaseAddress.ToString(), new GrpcChannelOptions
+            {
+                HttpHandler = transformingHandler,
+                LoggerFactory = loggerFactory,
+            });
+            var client = new TestingService.TestingServiceClient(channel);
+
+            var payload = new Payload();
+            client.SimpleMethod(payload).Should().Be(payload);
         }
     }
 }
