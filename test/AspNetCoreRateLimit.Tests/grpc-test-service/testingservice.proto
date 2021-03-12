@@ -6,10 +6,10 @@ syntax = "proto3";
 
 package microsoft.outlook.platform.hosting.extensions.tests;
 
-option csharp_namespace = "Microsoft.Outlook.Platform.Hosting.Extensions.Tests";
+option csharp_namespace = "AspNetCoreRateLimit.Tests";
 
-service TestingService {
-	rpc SimpleMethod(PayloadRequest) returns (PayloadResponse);
+service Testing {
+	rpc FirstAPI(PayloadRequest) returns (PayloadResponse);
 }
 
 message PayloadResponse {

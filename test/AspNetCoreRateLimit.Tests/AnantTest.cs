@@ -17,6 +17,7 @@
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using Grpc.Net.Client;
 
     public static class RateLimiterExtension
     {
@@ -121,6 +122,7 @@
                 .ConfigureServices((builder, serviceCollection) =>
                 {
                     serviceCollection.AddRateLimiter(builder.Configuration);
+                    serviceCollection.AddGrpc();
                 }).
                 ConfigureLogging(logging =>
                 {
@@ -134,32 +136,26 @@
                 {
                     app.UseRateLimiter();
                     //app.ApplicationServices.GetRequiredService<IClientPolicyStore>().SeedAsync().Wait();
-                    app.Run(async context => await context.Response.WriteAsync("Done"));
+                    app.UseRouting();
+                    app.UseEndpoints(endpoints =>
+                    {
+                        // Communication with gRPC endpoints must be made through a gRPC client.
+                        // To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909
+                        endpoints.MapGrpcService<TestingService>();
+                    });
+                    ////app.Run(async context => await context.Response.WriteAsync("Done"));
                 });
 
-            using var server = new TestServer(builder)
-            {
-                // Unfortunately, the test server accepts a request which is missing the "testservice"
-                // path segment, but this is added here anyway to mirror what is done in production.
-                BaseAddress = new Uri("http://localhost/testservice"),
-                AllowSynchronousIO = true,
-            };
+            using var server = new TestServer(builder);
 
-            using var handler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, server.CreateHandler());
-            using var transformingHandler = new PathPrependingUriTransformingHandler(
-                new UriBuilder(server.BaseAddress).Path, handler);
-            var loggerFactory = server.Services.GetRequiredService<ILoggerFactory>();
-            // Note that address does not include the path segment, which is why we must use
-            // the PathPrependingUriTransformingHandler above.
-            using var channel = GrpcChannel.ForAddress(address: server.BaseAddress.ToString(), new GrpcChannelOptions
-            {
-                HttpHandler = transformingHandler,
-                LoggerFactory = loggerFactory,
-            });
-            var client = new TestingService.TestingServiceClient(channel);
+            //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            var channel = GrpcChannel.ForAddress("http://localhost");
+            Console.WriteLine(server.BaseAddress);
+            var client = new Testing.TestingClient(channel);
 
-            var payload = new Payload();
-            client.SimpleMethod(payload).Should().Be(payload);
+            var payload = new PayloadRequest();
+            var resp = client.FirstAPI(payload);
+            Console.WriteLine(resp.GetType().Name);
         }
     }
 }
