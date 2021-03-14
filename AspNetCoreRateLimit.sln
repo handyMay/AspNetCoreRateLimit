@@ -14,7 +14,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreRateLimit.Demo", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreRateLimit.Tests", "test\AspNetCoreRateLimit.Tests\AspNetCoreRateLimit.Tests.csproj", "{0A7C0247-AE46-4068-AE42-F955AE2A1D0E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcDemoService", "GrpcDemoService\GrpcDemoService.csproj", "{83EC69AF-728C-4522-A0BD-52AA19F4E462}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcDemoService", "GrpcDemoService\GrpcDemoService.csproj", "{83EC69AF-728C-4522-A0BD-52AA19F4E462}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RouteGuideServer", "test\RouteGuideServer\RouteGuideServer.csproj", "{D4AC71E3-B3BC-4C43-A8EB-0D411E52AEF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{83EC69AF-728C-4522-A0BD-52AA19F4E462}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83EC69AF-728C-4522-A0BD-52AA19F4E462}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83EC69AF-728C-4522-A0BD-52AA19F4E462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4AC71E3-B3BC-4C43-A8EB-0D411E52AEF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4AC71E3-B3BC-4C43-A8EB-0D411E52AEF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4AC71E3-B3BC-4C43-A8EB-0D411E52AEF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4AC71E3-B3BC-4C43-A8EB-0D411E52AEF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,6 +53,7 @@ Global
 		{14C9FF9D-E50A-4A66-AEAB-F2C113743B95} = {83B05009-1BC7-4E56-8D4B-0E107CA4D45B}
 		{0A7C0247-AE46-4068-AE42-F955AE2A1D0E} = {83B05009-1BC7-4E56-8D4B-0E107CA4D45B}
 		{83EC69AF-728C-4522-A0BD-52AA19F4E462} = {83B05009-1BC7-4E56-8D4B-0E107CA4D45B}
+		{D4AC71E3-B3BC-4C43-A8EB-0D411E52AEF4} = {83B05009-1BC7-4E56-8D4B-0E107CA4D45B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2FE0A4A1-855C-4770-A84F-F1CAE18E62EF}

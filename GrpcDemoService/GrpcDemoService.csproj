@@ -5,7 +5,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="RoutGuide\route_guide_db.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Protos\route_guide.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="RoutGuide\route_guide_db.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\route_guide.proto" />
   </ItemGroup>
 
   <ItemGroup>
