@@ -29,7 +29,6 @@ namespace Routeguide
     /// </summary>
     public static class RouteGuideUtil
     {
-        public const string DefaultFeaturesResourceName = "RouteGuideServer.RouteGuide.route_guide_db.json";
 
         private const double CoordFactor = 1e7;
 
@@ -111,10 +110,12 @@ namespace Routeguide
 
         private static string ReadFeaturesFromResource()
         {
-            var stream = typeof(RouteGuideUtil).GetTypeInfo().Assembly.GetManifestResourceStream(DefaultFeaturesResourceName);
+            var assembly = typeof(RouteGuideUtil).GetTypeInfo().Assembly;
+            var resourceName = assembly.GetManifestResourceNames()[0];
+            var stream = assembly.GetManifestResourceStream(resourceName);
             if (stream == null)
             {
-                throw new IOException(string.Format("Error loading the embedded resource \"{0}\"", DefaultFeaturesResourceName));
+                throw new IOException(string.Format("Error loading the embedded resource \"{0}\"", resourceName));
             }
             using (var streamReader = new StreamReader(stream))
             {
