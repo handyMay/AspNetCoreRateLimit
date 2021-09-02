@@ -42,8 +42,6 @@
     [TestClass]
     public class ThrottlingMiddlewareTests
     {
-        private readonly string jsonConfig = "{ \"ClientRateLimiting\": { \"EnableEndpointRateLimiting\": true, \"HttpStatusCode\": 503, \"GeneralRules\": [ { \"Endpoint\": \"*\", \"Period\": \"5s\", \"Limit\": 1 }, { \"Endpoint\": \"*\", \"Period\": \"1m\", \"Limit\": 2 }, { \"Endpoint\": \"post://api//clients\", \"Period\": \"5m\", \"Limit\": 3 } ] }, \"ClientRateLimitPolicies\": { \"ClientRules\": [ { \"ClientId\": \"cl-key-1\", \"Rules\": [ { \"Endpoint\": \"*\", \"Period\": \"10s\", \"Limit\": 1 } ] } ] }}";
-
         [TestMethod]
         public async Task TestMethod1()
         {
@@ -56,9 +54,12 @@
                             { "ClientRateLimiting:EnableRegexRuleMatching", "True" },
                             { "ClientRateLimiting:HttpStatusCode", "503" },
                             { "ClientRateLimiting:RateLimitCounterPrefix", "Anants-RateLimitCounterPrefix" },
-                            { "ClientRateLimiting:GeneralRules:0:Endpoint", "(.+):(/api/v1/).+(/experimentalevents/).+" },
+                            { "ClientRateLimiting:GeneralRules:0:Endpoint", "/events/"/*"(.+):(/api/v1/).+(/experimentalevents/).+"*/ },
                             { "ClientRateLimiting:GeneralRules:0:Period", "115m" },
                             { "ClientRateLimiting:GeneralRules:0:Limit", "1" },
+                            { "ClientRateLimiting:GeneralRules:1:Endpoint", "*"/*"(.+):(/api/v1/).+(/experimentalevents/).+"*/ },
+                            { "ClientRateLimiting:GeneralRules:1:Period", "115m" },
+                            { "ClientRateLimiting:GeneralRules:1:Limit", "1" },
                         });
                 })
                 .ConfigureServices((builder, serviceCollection) =>
@@ -88,14 +89,14 @@
                 // Act
                 var client = server.CreateClient();
                 client.DefaultRequestHeaders.Add("X-ClientId", "anant");
-                using var response = await client.GetAsync("http://localhost/api/v1/a/experimentalevents/aa");
+                using var response = await client.GetAsync("http://localhost/api/v1/a/experimentalevents/id1");
 
                 // Assert
                 response.EnsureSuccessStatusCode();
                 (await response.Content.ReadAsStringAsync()).Should().Be("Done", "get a successful response when Telemetry is applied");
                 
                 // Act
-                using var response1 = await client.GetAsync("http://localhost/api/v1/a/experimentalevents/aaa");
+                using var response1 = await client.GetAsync("http://localhost/api/v1/a/experimentalevents/id2");
                 // Assert
                 response1.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
                 (await response1.Content.ReadAsStringAsync()).Should().NotBeNull();

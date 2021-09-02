@@ -34,7 +34,7 @@ namespace GrpcDemoService
             services.Configure<ClientRateLimitOptions>(Configuration.GetSection("ClientRateLimiting"));
             services.Configure<ClientRateLimitPolicies>(Configuration.GetSection("ClientRateLimitPolicies"));
             services.AddSingleton<IClientPolicyStore, MemoryCacheClientPolicyStore>();
-            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            services.AddSingleton<IRateLimitConfiguration, MyIRateLimitConfiguration>();
             services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
 
             var features = RouteGuideUtil.LoadFeatures();
@@ -45,7 +45,7 @@ namespace GrpcDemoService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //app.UseClientRateLimiting();
+            app.UseClientRateLimiting();
             app.Use(async (context, next) =>
             {
                 // Do work that doesn't write to the Response.

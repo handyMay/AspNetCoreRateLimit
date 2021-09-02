@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AspNetCoreRateLimit.Tests
+namespace AspNetCoreRateLimit
 {
     internal class MyIRateLimitConfiguration : RateLimitConfiguration
     {
